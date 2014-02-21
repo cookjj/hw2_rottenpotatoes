@@ -1,13 +1,13 @@
 !!! 5
 %html
   %head
-    %title Kebab et Patatoes
+    %title Rotten Potatoes
     = stylesheet_link_tag 'application'
     = javascript_include_tag 'application'
     = csrf_meta_tags
 
   %body
-    %h1.title Kebab et Patatoes
+    %h1.title Rotten Potatoes!
     #main
       - if flash[:notice]
         #notice.message= flash[:notice]
