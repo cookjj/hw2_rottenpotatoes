@@ -4,7 +4,7 @@
 %table#movies
   %thead
     %tr
-      %th Movie Title
+      %th= link_to 'Movie Title', index_movie_path(movie)#indexSorted_path()
       %th Rating
       %th Release Date
       %th More Info
@@ -17,3 +17,4 @@
         %td= link_to "More about #{movie.title}", movie_path(movie)
 
 = link_to 'Add new movie', new_movie_path
+
