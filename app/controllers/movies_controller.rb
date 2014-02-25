@@ -5,13 +5,70 @@ class MoviesController < ApplicationController
     # will render app/views/movies/show.<extension> by default
   end
 
+#  def index
+#    @movies = Movie.all()
+#  end
+#  def sorted
+#    @movies = Movie.find(:all, :order => "title")
+#    render :index
+#  end
+
   def index
-    @movies = Movie.all()
+    @cl_hilite = { :hi_title => 'none', :hi_rating => 'hilite' } 
+    @all_ratings = Movie.all_ratings()
+    redirect = false
+
+    if params[:ratings] == nil
+      if session[:ratings] != nil
+        flash.keep
+        params[:ratings] = session[:ratings]
+        redirect = true
+      end
+      else
+        session[:ratings] = params[:ratings]
+    end
+
+    if params[:orderby] == nil
+      if session[:orderby] != nil
+        flash.keep
+        params[:orderby] = session[:orderby]
+        redirect = true
+      end
+      else
+      session[:orderby] = params[:orderby]
+    end
+
+    if redirect == true
+      redirect_to :orderby => session[:orderby],
+                  :ratings => session[:ratings],
+                  :commit => params[:commit];
+    end
+
+
+    @orderby = params[:orderby]
+    if params[:ratings] != nil
+      @checked_ratings = params[:ratings]
+    else
+      @checked_ratings = @all_ratings
+    end
+
+    if @orderby.nil?
+      if params[:ratings].nil?
+        @movies = Movie.all
+      else
+        @movies = Movie.find(:all, :conditions => {:rating => @checked_ratings.keys})
+      end
+    else
+      if params[:ratings].nil?
+        @movies = Movie.find(:all, :order => @orderby)
+      else
+        @movies = Movie.find(:all, :order => @orderby, :conditions => { :rating => @checked_ratings.keys})
+      end
+    end
   end
 
-  def indexSorted
-    @movies = Movie.find(:all, :order => "title")
-  end
+
+
 
   def new
     # default: render 'new' template
