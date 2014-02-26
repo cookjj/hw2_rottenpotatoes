@@ -14,16 +14,18 @@ class MoviesController < ApplicationController
 #  end
 
   def index
-    @all_ratings = Movie.all_ratings()
     redirect = false
+    @all_ratings = Movie.all_ratings()
+    @checked_ratings = @all_ratings
+
 
     if params[:ratings] == nil
-      if session[:ratings] != nil
-        flash.keep
-        params[:ratings] = session[:ratings]
+      if session[:ratings] != nil #copy ratings pref form session to current params
         redirect = true
+        flash.keep()
+        params[:ratings] = session[:ratings]
       end
-      else
+    else
         session[:ratings] = params[:ratings]
     end
 
@@ -33,22 +35,20 @@ class MoviesController < ApplicationController
         params[:orderby] = session[:orderby]
         redirect = true
       end
-      else
-      session[:orderby] = params[:orderby]
+    else
+        session[:orderby] = params[:orderby]
     end
 
     if redirect == true
       redirect_to :orderby => session[:orderby],
                   :ratings => session[:ratings],
-                  :commit => params[:commit];
+                  :commit  => params[:commit];
     end
 
 
     @orderby = params[:orderby]
     if params[:ratings] != nil
       @checked_ratings = params[:ratings]
-    else
-      @checked_ratings = @all_ratings
     end
 
     if @orderby.nil?
@@ -64,7 +64,8 @@ class MoviesController < ApplicationController
         @movies = Movie.find(:all, :order => @orderby, :conditions => { :rating => @checked_ratings.keys})
       end
     end
-  end
+
+  end #fn
 
 
 
