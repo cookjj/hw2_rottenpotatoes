@@ -14,7 +14,6 @@ class MoviesController < ApplicationController
 #  end
 
   def index
-    @cl_hilite = { :hi_title => 'none', :hi_rating => 'hilite' } 
     @all_ratings = Movie.all_ratings()
     redirect = false
 
