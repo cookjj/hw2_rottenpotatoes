@@ -16,27 +16,26 @@ class MoviesController < ApplicationController
   def index
     redirect = false
     @all_ratings = Movie.all_ratings()
-    @checked_ratings = @all_ratings
 
-
+    # if no ratings restriction submitted, and have pref in session, use that
     if params[:ratings] == nil
-      if session[:ratings] != nil #copy ratings pref form session to current params
+      if session[:ratings] != nil
         redirect = true
         flash.keep()
         params[:ratings] = session[:ratings]
       end
-    else
-        session[:ratings] = params[:ratings]
+    else # if ratings pref submitted, save to session hash
+      session[:ratings] = params[:ratings]
     end
 
     if params[:orderby] == nil
       if session[:orderby] != nil
-        flash.keep
-        params[:orderby] = session[:orderby]
         redirect = true
+        flash.keep()
+        params[:orderby] = session[:orderby]
       end
     else
-        session[:orderby] = params[:orderby]
+      session[:orderby] = params[:orderby]
     end
 
     if redirect == true
@@ -45,26 +44,29 @@ class MoviesController < ApplicationController
                   :commit  => params[:commit];
     end
 
-
     @orderby = params[:orderby]
+
     if params[:ratings] != nil
       @checked_ratings = params[:ratings]
+    else
+      @checked_ratings = @all_ratings
     end
 
-    if @orderby.nil?
-      if params[:ratings].nil?
-        @movies = Movie.all
-      else
+    if @orderby.nil? #UNORDERED
+      if params[:ratings].nil? #UNORDERED W/O RATINGS RESTRICT
+        @movies = Movie.all #
+      else #UNORDERED WITH RATINGS RESTRICT
         @movies = Movie.find(:all, :conditions => {:rating => @checked_ratings.keys})
       end
-    else
-      if params[:ratings].nil?
+
+    else # ORDERED
+      if params[:ratings].nil? # ORDERED ONLY
         @movies = Movie.find(:all, :order => @orderby)
-      else
+      else #ORDERED WITH RATING RESTRICT
         @movies = Movie.find(:all, :order => @orderby, :conditions => { :rating => @checked_ratings.keys})
       end
     end
-
+    return @movies
   end #fn
 
 
